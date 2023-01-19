@@ -19,6 +19,12 @@ redis-cli
 npx rbook
 ```
 
+Starting sandbox from the route folder
+
+```bash
+npm run sandbox
+```
+
 ## Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!
