@@ -13,6 +13,10 @@ const run = async () => {
 
 	const car = await client.hGetAll('car');
 	console.log(car);
+
+	// always returns an object, even if not exists
+	const empty = await client.hGetAll('foo');
+	console.log(empty);
 };
 
 run();
