@@ -17,6 +17,9 @@ const run = async () => {
 	// always returns an object, even if not exists
 	const empty = await client.hGetAll('foo');
 	console.log(empty);
+	if (Object.keys(empty).length === 0) {
+		console.log('not found!');
+	}
 };
 
 run();
