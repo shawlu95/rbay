@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { client } from '../src/services/redis';
 
-const run = async () => {
+const runHash = async () => {
 	await client.hSet('car', {
 		brand: 'vw',
 		model: 'tiguan',
@@ -22,4 +22,16 @@ const run = async () => {
 	}
 };
 
-run();
+const runPipeline = async () => {
+	await client.hSet('user#1', { username: 'alice' });
+	await client.hSet('user#2', { username: 'bob' });
+	await client.hSet('user#3', { username: 'cindy' });
+	const results = await Promise.all([
+		client.hGetAll('user#1'),
+		client.hGetAll('user#2'),
+		client.hGetAll('user#3')
+	]);
+	console.log(results);
+};
+
+runPipeline();
