@@ -2,6 +2,23 @@
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
+## Start Local Redis
+
+```bash
+brew tap redis-stack/redis-stack
+brew install redis-stack
+
+# To start Redis
+redis-stack-server
+
+# To connect to your local Redis server and execute commands
+redis-cli
+
+# open rbook at localhost:3050
+# enter host=localhost, port=6379, password blank
+npx rbook
+```
+
 ## Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!
