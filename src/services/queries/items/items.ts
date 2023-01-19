@@ -3,8 +3,16 @@ import { client } from '$services/redis';
 import { itemKey } from '$services/keys';
 import { serialize } from './serialize';
 import { genId } from '$services/utils';
+import { deserialize } from './deserialize';
 
-export const getItem = async (id: string) => {};
+export const getItem = async (id: string) => {
+	const item = await client.hGetAll(itemKey(id));
+	if (Object.keys(item).length === 0) {
+		return null;
+	}
+	console.log('fetch item from cache', item);
+	return deserialize(id, item);
+};
 
 export const getItems = async (ids: string[]) => {};
 
