@@ -10,7 +10,7 @@ export const itemKey = (id: string) => `i#${id}`;
 export const itemByViewKey = () => 'item:views'; // sorted set
 export const itemByEndingAtKey = () => 'item:endingAt'; // sorted set
 export const itemBidKey = (id: string) => `i:b#${id}`; // list
-export const itemPriceKey = () => 'item:price'; // sorted set
+export const itemByPriceKey = () => 'item:price'; // sorted set
 
 // relation
 export const userLikesKey = (id: string) => `u:l#${id}`;
