@@ -1,5 +1,5 @@
 import type { CreateBidAttrs, Bid } from '$services/types';
-import { itemBidKey } from '$services/keys';
+import { itemBidKey, itemKey } from '$services/keys';
 import { client } from '$services/redis';
 import { DateTime } from 'luxon';
 import { getItem } from './items';
@@ -20,7 +20,14 @@ export const createBid = async (attrs: CreateBidAttrs) => {
 	}
 
 	const serialized = serializeBid(attrs.amount, attrs.createdAt.toMillis());
-	await client.rPush(itemBidKey(attrs.itemId), serialized);
+	Promise.all([
+		client.rPush(itemBidKey(attrs.itemId), serialized),
+		client.hSet(itemKey(item.id), {
+			bids: item.bids + 1,
+			price: attrs.amount,
+			highestBidUserId: attrs.userId
+		})
+	]);
 };
 
 export const getBidHistory = async (itemId: string, offset = 0, count = 10): Promise<Bid[]> => {
