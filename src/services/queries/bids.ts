@@ -1,12 +1,11 @@
 import type { CreateBidAttrs, Bid } from '$services/types';
 import { itemBidKey, itemKey, itemByPriceKey } from '$services/keys';
-import { client } from '$services/redis';
+import { client, withLock } from '$services/redis';
 import { DateTime } from 'luxon';
 import { getItem } from './items';
 
 export const createBid = async (attrs: CreateBidAttrs) => {
-	return client.executeIsolated(async (isolatedClient) => {
-		await isolatedClient.watch(itemKey(attrs.itemId));
+	return withLock(attrs.itemId, async () => {
 		const item = await getItem(attrs.itemId);
 
 		if (!item) {
@@ -22,19 +21,18 @@ export const createBid = async (attrs: CreateBidAttrs) => {
 		}
 
 		const serialized = serializeBid(attrs.amount, attrs.createdAt.toMillis());
-		return isolatedClient
-			.multi()
-			.rPush(itemBidKey(attrs.itemId), serialized)
-			.hSet(itemKey(item.id), {
+		return Promise.all([
+			client.rPush(itemBidKey(attrs.itemId), serialized),
+			client.hSet(itemKey(item.id), {
 				bids: item.bids + 1,
 				price: attrs.amount,
 				highestBidUserId: attrs.userId
-			})
-			.zAdd(itemByPriceKey(), {
+			}),
+			client.zAdd(itemByPriceKey(), {
 				value: item.id,
 				score: attrs.amount
 			})
-			.exec();
+		]);
 	});
 };
 
