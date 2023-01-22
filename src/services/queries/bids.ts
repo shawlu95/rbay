@@ -2,8 +2,23 @@ import type { CreateBidAttrs, Bid } from '$services/types';
 import { itemBidKey } from '$services/keys';
 import { client } from '$services/redis';
 import { DateTime } from 'luxon';
+import { getItem } from './items';
 
 export const createBid = async (attrs: CreateBidAttrs) => {
+	const item = await getItem(attrs.itemId);
+
+	if (!item) {
+		throw new Error('Item does not exist');
+	}
+
+	if (item.price >= attrs.amount) {
+		throw new Error('Bid too low');
+	}
+
+	if (item.endingAt.diff(DateTime.now()).toMillis() < 0) {
+		throw new Error('Item closed to bidding');
+	}
+
 	const serialized = serializeBid(attrs.amount, attrs.createdAt.toMillis());
 	await client.rPush(itemBidKey(attrs.itemId), serialized);
 };
