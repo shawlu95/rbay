@@ -1,5 +1,5 @@
 import { client } from '$services/redis';
-import { userKey } from '$services/keys';
+import { userKey, usernamesUniqueKey } from '$services/keys';
 import type { CreateUserAttrs } from '$services/types';
 import { genId } from '$services/utils';
 
@@ -12,8 +12,15 @@ export const getUserById = async (id: string) => {
 };
 
 export const createUser = async (attrs: CreateUserAttrs) => {
+	// this does not guard against concurrent registration of username
+	const exists = await client.sIsMember(usernamesUniqueKey(), attrs.username);
+	if (exists) {
+		throw new Error('Username already exists.');
+	}
+
 	const id = genId();
 	await client.hSet(userKey(id), serialize(attrs));
+	await client.sAdd(usernamesUniqueKey(), attrs.username);
 	console.log('cache user', id, attrs);
 	return id;
 };
