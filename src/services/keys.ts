@@ -8,6 +8,7 @@ export const usernamesKey = () => 'usernames'; // sorted set
 // items related keys
 export const itemKey = (id: string) => `i#${id}`;
 export const itemByViewKey = () => 'item:views'; // sorted set
+export const itemByEndingAtKey = () => 'item:endingAt'; // sorted set
 
 // relation
 export const userLikesKey = (id: string) => `u:l#${id}`;
