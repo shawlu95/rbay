@@ -8,3 +8,5 @@ export const itemKey = (id: string) => `i#${id}`;
 
 // h hash set to store all usernames
 export const usernamesUniqueKey = () => 'usernames:unique';
+
+export const userLikesKey = (id: string) => `u:l#${id}`;
