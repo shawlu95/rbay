@@ -12,7 +12,8 @@ export const withLock = async (key: string, callback: () => any) => {
 
 	while (retries > 0) {
 		const locked = await client.set(lockKey, token, {
-			NX: true
+			NX: true,
+			PX: 1000
 		});
 
 		if (!locked) {
