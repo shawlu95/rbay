@@ -1,6 +1,6 @@
 import type { CreateItemAttrs } from '$services/types';
 import { client } from '$services/redis';
-import { itemKey } from '$services/keys';
+import { itemKey, itemByViewKey } from '$services/keys';
 import { serialize } from './serialize';
 import { genId } from '$services/utils';
 import { deserialize } from './deserialize';
@@ -30,6 +30,14 @@ export const createItem = async (attrs: CreateItemAttrs, userId: string) => {
 	const id = genId();
 	const serialized = serialize(attrs);
 	console.log('cache item', id, serialized);
-	await client.hSet(itemKey(id), serialized);
+
+	await Promise.all([
+		client.hSet(itemKey(id), serialized),
+		client.zAdd(itemByViewKey(), {
+			value: id,
+			score: 0
+		})
+	]);
+
 	return id;
 };
