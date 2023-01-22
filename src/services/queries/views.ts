@@ -12,5 +12,6 @@ export const incrementView = async (itemId: string, userId: string) => {
 	// 	]);
 	// }
 
+	// use Lua script to implement the equivalent
 	return await client.incrementView(itemId, userId);
 };
