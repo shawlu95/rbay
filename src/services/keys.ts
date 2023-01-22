@@ -12,3 +12,4 @@ export const itemByEndingAtKey = () => 'item:endingAt'; // sorted set
 
 // relation
 export const userLikesKey = (id: string) => `u:l#${id}`;
+export const itemViewsKey = (id: string) => `i:v#${id}`;
