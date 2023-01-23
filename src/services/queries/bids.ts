@@ -1,13 +1,13 @@
 import type { CreateBidAttrs, Bid } from '$services/types';
 import { itemBidKey, itemKey, itemByPriceKey } from '$services/keys';
-import { client, withLock } from '$services/redis';
+import { client, withLock, pause } from '$services/redis';
 import { DateTime } from 'luxon';
 import { getItem } from './items';
 
 export const createBid = async (attrs: CreateBidAttrs) => {
-	return withLock(attrs.itemId, async (signal: any) => {
+	return withLock(attrs.itemId, async (lockedClient: typeof client, signal: any) => {
 		const item = await getItem(attrs.itemId);
-
+		await pause(5000);
 		if (!item) {
 			throw new Error('Item does not exist');
 		}
@@ -22,18 +22,19 @@ export const createBid = async (attrs: CreateBidAttrs) => {
 
 		const serialized = serializeBid(attrs.amount, attrs.createdAt.toMillis());
 
-		if (signal.expired) {
-			throw new Error('Lock has expired');
-		}
+		// don't need other engineers to implement manual signal check
+		// if (signal.expired) {
+		// 	throw new Error('Lock has expired');
+		// }
 
 		return Promise.all([
-			client.rPush(itemBidKey(attrs.itemId), serialized),
-			client.hSet(itemKey(item.id), {
+			lockedClient.rPush(itemBidKey(attrs.itemId), serialized),
+			lockedClient.hSet(itemKey(item.id), {
 				bids: item.bids + 1,
 				price: attrs.amount,
 				highestBidUserId: attrs.userId
 			}),
-			client.zAdd(itemByPriceKey(), {
+			lockedClient.zAdd(itemByPriceKey(), {
 				value: item.id,
 				score: attrs.amount
 			})

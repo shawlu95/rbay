@@ -1,7 +1,10 @@
 import { client } from '$services/redis';
 import { randomBytes } from 'crypto';
 
-export const withLock = async (key: string, callback: (signal: any) => any) => {
+export const withLock = async (
+	key: string,
+	callback: (redisClient: Client, signal: any) => any
+) => {
 	// initialize a few variables to control retry behavior
 	const retryDelayMs = 100;
 	const timeout = 1000;
@@ -29,7 +32,9 @@ export const withLock = async (key: string, callback: (signal: any) => any) => {
 			setTimeout(() => {
 				signal.expired = true;
 			}, timeout);
-			const result = await callback(signal);
+
+			const proxiedClient = buildClientProxy(timeout);
+			const result = await callback(proxiedClient, signal);
 			return result;
 		} finally {
 			await client.unlock(lockKey, token);
@@ -37,9 +42,25 @@ export const withLock = async (key: string, callback: (signal: any) => any) => {
 	}
 };
 
-const buildClientProxy = () => {};
+type Client = typeof client;
+const buildClientProxy = (timeout: number) => {
+	const startTime = Date.now();
 
-const pause = (duration: number) => {
+	const handler = {
+		get(target: Client, prop: keyof Client) {
+			if (Date.now() >= startTime + timeout) {
+				throw new Error('Lock has expired');
+			}
+
+			const value = target[prop];
+			return typeof value === 'function' ? value.bind(target) : value;
+		}
+	};
+
+	return new Proxy(client, handler) as Client;
+};
+
+export const pause = (duration: number) => {
 	return new Promise((resolve) => {
 		setTimeout(resolve, duration);
 	});
