@@ -23,9 +23,12 @@ export const withLock = async (key: string, callback: () => any) => {
 		}
 
 		// acquired lock, run the callback
-		const result = await callback();
-		await client.unlock(lockKey, token);
-		return result;
+		try {
+			const result = await callback();
+			return result;
+		} finally {
+			await client.unlock(lockKey, token);
+		}
 	}
 };
 
