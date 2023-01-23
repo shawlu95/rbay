@@ -39,7 +39,7 @@ export const withLock = async (key: string, callback: (signal: any) => any) => {
 
 const buildClientProxy = () => {};
 
-export const pause = (duration: number) => {
+const pause = (duration: number) => {
 	return new Promise((resolve) => {
 		setTimeout(resolve, duration);
 	});
