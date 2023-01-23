@@ -1,12 +1,15 @@
 import type { CreateBidAttrs, Bid } from '$services/types';
 import { itemBidKey, itemKey, itemByPriceKey } from '$services/keys';
-import { client, withLock } from '$services/redis';
+import { client, withLock, pause } from '$services/redis';
 import { DateTime } from 'luxon';
 import { getItem } from './items';
 
 export const createBid = async (attrs: CreateBidAttrs) => {
-	return withLock(attrs.itemId, async () => {
+	return withLock(attrs.itemId, async (signal: any) => {
 		const item = await getItem(attrs.itemId);
+
+		// test that lock should expire
+		await pause(5000);
 
 		if (!item) {
 			throw new Error('Item does not exist');
@@ -21,6 +24,11 @@ export const createBid = async (attrs: CreateBidAttrs) => {
 		}
 
 		const serialized = serializeBid(attrs.amount, attrs.createdAt.toMillis());
+
+		if (signal.expired) {
+			throw new Error('Lock has expired');
+		}
+
 		return Promise.all([
 			client.rPush(itemBidKey(attrs.itemId), serialized),
 			client.hSet(itemKey(item.id), {
