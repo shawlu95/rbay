@@ -60,7 +60,7 @@ const buildClientProxy = (timeout: number) => {
 	return new Proxy(client, handler) as Client;
 };
 
-export const pause = (duration: number) => {
+const pause = (duration: number) => {
 	return new Promise((resolve) => {
 		setTimeout(resolve, duration);
 	});

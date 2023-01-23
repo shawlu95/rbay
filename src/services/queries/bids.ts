@@ -1,13 +1,13 @@
 import type { CreateBidAttrs, Bid } from '$services/types';
 import { itemBidKey, itemKey, itemByPriceKey } from '$services/keys';
-import { client, withLock, pause } from '$services/redis';
+import { client, withLock } from '$services/redis';
 import { DateTime } from 'luxon';
 import { getItem } from './items';
 
 export const createBid = async (attrs: CreateBidAttrs) => {
 	return withLock(attrs.itemId, async (lockedClient: typeof client, signal: any) => {
 		const item = await getItem(attrs.itemId);
-		await pause(5000);
+
 		if (!item) {
 			throw new Error('Item does not exist');
 		}
