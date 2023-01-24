@@ -1,23 +1,23 @@
 // Sessions
-export const sessionKey = (sessionId) => `sessions#${sessionId}`;
+export const sessionKey = (id) => `s#${id}`;
 
 // Cache
-export const pageCacheKey = (route) => `pagecache#${route}`;
+export const pageCacheKey = (id) => `pc#${id}`;
 
 // Users
-export const usersKey = (userId) => `users#${userId}`;
+export const usersKey = (userId) => (id) => `u#${id}`;
 export const usernamesKey = () => 'usernames';
 export const usernamesUniqueKey = () => 'usernames:unique';
 export const usersItemsKey = (userId) => `users:items#${userId}`;
 export const usersBidsKey = (userId) => `users:bids#${userId}`;
-export const usersLikesKey = (userId) => `users:likes#${userId}`;
+export const usersLikesKey = (id) => `u:l#${id}`;
 
 // Items
-export const itemsKey = (itemId) => `items#${itemId}`;
-export const bidHistoryKey = (itemId) => `history#${itemId}`;
+export const itemsKey = (id) => `i#${id}`;
+export const bidHistoryKey = (id) => `i:b#${id}`;
 export const itemsByBidsKey = () => 'items:bids';
-export const itemsByViewsKey = () => 'items:views';
-export const itemsByPriceKey = () => 'items:price';
-export const itemsByEndingAtKey = () => 'items:endingAt';
-export const itemsViewsKey = (itemId) => `items:views#${itemId}`;
-export const itemsIndexKey = () => 'idx:items';
+export const itemsByViewsKey = () => 'item:views';
+export const itemsByPriceKey = () => 'item:price';
+export const itemsByEndingAtKey = () => 'item:endingAt';
+export const itemsViewsKey = (id) => `i:v#${id}`;
+export const itemsIndexKey = () => 'idx:i';

@@ -25,6 +25,12 @@ Starting sandbox from the route folder
 npm run sandbox
 ```
 
+## Populate Fake Data
+
+```bash
+npm run seed
+```
+
 ## Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!
