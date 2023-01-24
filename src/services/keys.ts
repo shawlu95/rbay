@@ -11,6 +11,7 @@ export const itemByViewKey = () => 'item:views'; // sorted set
 export const itemByEndingAtKey = () => 'item:endingAt'; // sorted set
 export const itemBidKey = (id: string) => `i:b#${id}`; // list
 export const itemByPriceKey = () => 'item:price'; // sorted set
+export const itemIndexKey = () => 'idx:i'; // index key
 
 // relation
 export const userLikesKey = (id: string) => `u:l#${id}`;
