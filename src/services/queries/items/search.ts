@@ -13,9 +13,10 @@ export const searchItems = async (term: string, size: number = 5) => {
 		return [];
 	}
 
-	console.log('redisearch query:', cleaned);
+	const query = `(@name:(${cleaned}) => { $weight: 5.0 }) | @description:(${cleaned})`;
+	console.log('redisearch query:', query);
 	// automatically search all fields marked as text
-	const { total, documents } = await client.ft.search(itemIndexKey(), cleaned, {
+	const { total, documents } = await client.ft.search(itemIndexKey(), query, {
 		LIMIT: {
 			from: 0,
 			size
