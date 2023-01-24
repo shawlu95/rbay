@@ -27,6 +27,9 @@ npm run sandbox
 
 ## Populate Fake Data
 
+- Some fields can be sortable: `name`, `endingAt`, `views`, `likes`, `price`, `bids`
+- Some fields are not sortable: `description`, `ownerId`
+
 ```bash
 npm run seed
 ```
